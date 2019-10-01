@@ -35,11 +35,11 @@ public enum LayoutType {
 }
 
 public struct CollectionViewConfiguration {
-    public let scrollingDirection: UICollectionViewScrollDirection
+    public let scrollingDirection: UICollectionView.ScrollDirection
     public var layoutType: LayoutType
     public static let `default` = CollectionViewConfiguration(layoutType: .numberOfCellOnScreen(5), scrollingDirection: .horizontal)
     
-    public init(layoutType: LayoutType, scrollingDirection: UICollectionViewScrollDirection) {
+    public init(layoutType: LayoutType, scrollingDirection: UICollectionView.ScrollDirection) {
         self.layoutType = layoutType
         self.scrollingDirection = scrollingDirection
     }
@@ -61,6 +61,8 @@ public class InfiniteScrollingBehaviour: NSObject {
                 return collectionView.bounds.size.width
             case .vertical:
                 return collectionView.bounds.size.height
+            @unknown default:
+                return collectionView.bounds.size.width;
             }
         }
     }
@@ -69,9 +71,11 @@ public class InfiniteScrollingBehaviour: NSObject {
         get {
             switch collectionConfiguration.scrollingDirection {
             case .horizontal:
-                return collectionView.contentSize.width
+                return collectionView.contentSize.width;
             case .vertical:
-                return collectionView.contentSize.height
+                return collectionView.contentSize.height;
+            @unknown default:
+                return collectionView.contentSize.width;
             }
         }
     }
@@ -146,7 +150,7 @@ public class InfiniteScrollingBehaviour: NSObject {
     public func scroll(toElementAtIndex index: Int) {
         let boundaryDataSetIndex = indexInBoundaryDataSet(forIndexInOriginalDataSet: index)
         let indexPath = IndexPath(item: boundaryDataSetIndex, section: 0)
-        let scrollPosition: UICollectionViewScrollPosition = collectionConfiguration.scrollingDirection == .horizontal ? .left : .top
+        let scrollPosition: UICollectionView.ScrollPosition = collectionConfiguration.scrollingDirection == .horizontal ? .left : .top
         collectionView.scrollToItem(at: indexPath, at: scrollPosition, animated: false)
     }
     
@@ -199,12 +203,12 @@ extension InfiniteScrollingBehaviour: UICollectionViewDelegateFlowLayout {
         switch (collectionConfiguration.scrollingDirection, delegate) {
         case (.horizontal, .some(let delegate)):
             let inset = delegate.verticalPaddingForHorizontalInfiniteScrollingBehaviour(behaviour: self)
-            return UIEdgeInsetsMake(inset, 0, inset, 0)
+            return UIEdgeInsets(top: inset, left: 0, bottom: inset, right: 0)
         case (.vertical, .some(let delegate)):
             let inset = delegate.horizonalPaddingForHorizontalInfiniteScrollingBehaviour(behaviour: self)
-            return UIEdgeInsetsMake(0, inset, 0, inset)
+            return UIEdgeInsets(top: 0, left: inset, bottom: 0, right: inset)
         case (_, _):
-            return UIEdgeInsetsMake(0, 0, 0, 0)
+            return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         }
     }
     
@@ -220,6 +224,8 @@ extension InfiniteScrollingBehaviour: UICollectionViewDelegateFlowLayout {
             return CGSize(width: cellSize, height: collectionView.bounds.size.height)
         case (.vertical, _):
             return CGSize(width: collectionView.bounds.size.width, height: cellSize)
+        case (_, _):
+            return CGSize(width: cellSize, height: cellSize);
         }
     }
     
