@@ -143,15 +143,15 @@ public class InfiniteScrollingBehaviour: NSObject {
     }
     
     private func scrollToFirstElement() {
-        scroll(toElementAtIndex: 0)
+        scroll(toElementAtIndex: 0, animated: false)
     }
     
     
-    public func scroll(toElementAtIndex index: Int) {
+    public func scroll(toElementAtIndex index: Int, animated: Bool) {
         let boundaryDataSetIndex = indexInBoundaryDataSet(forIndexInOriginalDataSet: index)
         let indexPath = IndexPath(item: boundaryDataSetIndex, section: 0)
         let scrollPosition: UICollectionView.ScrollPosition = collectionConfiguration.scrollingDirection == .horizontal ? .left : .top
-        collectionView.scrollToItem(at: indexPath, at: scrollPosition, animated: false)
+        collectionView.scrollToItem(at: indexPath, at: scrollPosition, animated: animated)
     }
     
     public func indexInOriginalDataSet(forIndexInBoundaryDataSet index: Int) -> Int {
